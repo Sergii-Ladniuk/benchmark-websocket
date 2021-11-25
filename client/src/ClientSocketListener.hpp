@@ -88,7 +88,7 @@ public:
  */
 class ClientSenderCoroutine : public oatpp::async::Coroutine<ClientSenderCoroutine> {
 private:
-  /**
+    /**
    * WebSocket connection to load.
    */
   std::shared_ptr<oatpp::websocket::AsyncWebSocket> m_socket;
@@ -100,7 +100,8 @@ public:
 
   Action act() override {
     /* Send "hello!" message. Once message sent, send another one. */
-    return m_socket->sendOneFrameTextAsync("hello!").next(yieldTo(&ClientSenderCoroutine::act));
+    return m_socket->sendOneFrameTextAsync("hello!")
+      .next(waitFor(std::chrono::milliseconds (250)).next(yieldTo(&ClientSenderCoroutine::act)));
   }
 
 };
@@ -146,7 +147,7 @@ public:
 
   Action act() override {
     /* Establish WebSocket connection */
-    return m_connector->connectAsync("ws").callbackTo(&ClientCoroutine::onConnected);
+    return m_connector->connectAsync("/api/ws/pete").callbackTo(&ClientCoroutine::onConnected);
   }
 
 
